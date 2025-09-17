@@ -1,0 +1,67 @@
+/* Layout Utilities for Consistent Spacing */
+
+/* Container Utilities */
+.container-sm { @apply max-w-2xl mx-auto px-4 sm:px-6; }
+.container-md { @apply max-w-4xl mx-auto px-4 sm:px-6; }
+.container-lg { @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8; }
+.container-xl { @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8; }
+
+/* Section Spacing */
+.section-py { @apply py-12 sm:py-16 lg:py-20; }
+.section-py-sm { @apply py-8 sm:py-12; }
+.section-py-lg { @apply py-16 sm:py-20 lg:py-24; }
+
+/* Card Spacing */
+.card-padding { @apply p-6 sm:p-8; }
+.card-padding-sm { @apply p-4 sm:p-6; }
+.card-padding-lg { @apply p-8 sm:p-10; }
+
+/* Grid Spacing */
+.grid-gap { @apply gap-6 sm:gap-8; }
+.grid-gap-sm { @apply gap-4 sm:gap-6; }
+.grid-gap-lg { @apply gap-8 sm:gap-10; }
+
+/* Text Spacing */
+.text-spacing { @apply space-y-4; }
+.text-spacing-sm { @apply space-y-2; }
+.text-spacing-lg { @apply space-y-6; }
+
+/* Form Spacing */
+.form-spacing { @apply space-y-6; }
+.form-spacing-sm { @apply space-y-4; }
+
+/* Button Spacing */
+.btn-group { @apply flex flex-col sm:flex-row gap-3; }
+.btn-group-sm { @apply flex gap-2; }
+
+/* Navbar Compensation */
+.navbar-offset { @apply pt-16; }
+
+/* Admin Layout */
+.admin-content { @apply p-6 lg:p-8; }
+.admin-sidebar-offset { @apply ml-0 lg:ml-64; }
+
+/* Responsive Breakpoints for Consistent Design */
+@media (max-width: 640px) {
+  .mobile-stack { @apply flex-col; }
+  .mobile-full { @apply w-full; }
+  .mobile-center { @apply text-center; }
+}
+
+/* Focus States for Accessibility */
+.focus-ring { @apply focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2; }
+
+/* Hover States */
+.hover-lift { @apply hover:transform hover:scale-105 transition-transform duration-200; }
+.hover-shadow { @apply hover:shadow-lg transition-shadow duration-200; }
+
+/* Loading States */
+.loading-shimmer {
+  @apply animate-pulse bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 bg-[length:200%_100%];
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}

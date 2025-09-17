@@ -25,25 +25,30 @@
 import jwt from 'jsonwebtoken';
 
 export const generateToken = (res, user, message) => {
-  const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+  // Include user role in JWT token for role-based access control
+  const token = jwt.sign({ 
+    userId: user._id,
+    role: user.role,
+    email: user.email
+  }, process.env.JWT_SECRET, {
     expiresIn: process.env.JWT_EXPIRE || '30d',
   });
-  console.log(`🔹 Generated Token: ${token}`);
 
   res.cookie('token', token, {
     httpOnly: true,
     sameSite: 'strict',
+    secure: process.env.NODE_ENV === 'production',
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
   });
 
   return res.status(200).json({
     success: true,
     message,
-    token,
     user: {
       id: user._id,
       name: user.name,
       email: user.email,
+      role: user.role
     },
   });
 };

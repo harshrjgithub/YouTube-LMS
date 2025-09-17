@@ -5,7 +5,15 @@ const lectureSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    lectureDescription: {
+        type: String,
+        default: '',
+    },
     videoUrl: {
+        type: String,
+        default: null,
+    },
+    youtubeVideoId: {
         type: String,
         default: null,
     },
@@ -16,6 +24,10 @@ const lectureSchema = new mongoose.Schema({
     isPreview: {
         type: Boolean,
         default: false,
+    },
+    sequence: {
+        type: Number,
+        default: 0,
     },
 }, { timestamps: true });
 

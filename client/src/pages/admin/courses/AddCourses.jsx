@@ -17,6 +17,7 @@ const AddCourses = () => {
   const [level, setLevel] = React.useState('');
   const [description, setDescription] = React.useState('');
   const [image, setImage] = React.useState(null);
+  const [isPublished, setIsPublished] = React.useState(true); // Default to published
   const [createCourse,{data, isLoading , error, isSuccess}] = useCreateCourseMutation();
 
   const navigate = useNavigate();
@@ -25,9 +26,10 @@ const AddCourses = () => {
 
   const createCourseHandler = async () => {
     try {
-        console.log("Payload:", { courseTitle, category, level, description });
-        await createCourse({ courseTitle, category, level, description });
-        console.log("Course Created:", { courseTitle, category, level, description });
+        const payload = { courseTitle, category, level, description, isPublished };
+        console.log("Payload:", payload);
+        await createCourse(payload);
+        console.log("Course Created:", payload);
     } catch (err) {
         console.error("Error creating course:", err);
         toast.error(err?.data?.message || "Failed to create course.");
@@ -153,6 +155,37 @@ const selectedLevelHandler = (value) => {
               </SelectItem>
             </SelectContent>
           </Select>
+        </div>
+
+        {/* Course Status */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-600 mb-1">
+            Course Status
+          </label>
+          <div className="flex items-center space-x-4">
+            <label className="flex items-center">
+              <input
+                type="radio"
+                name="courseStatus"
+                value="published"
+                checked={isPublished === true}
+                onChange={() => setIsPublished(true)}
+                className="mr-2"
+              />
+              <span className="text-sm text-gray-700">Published (Visible to students)</span>
+            </label>
+            <label className="flex items-center">
+              <input
+                type="radio"
+                name="courseStatus"
+                value="draft"
+                checked={isPublished === false}
+                onChange={() => setIsPublished(false)}
+                className="mr-2"
+              />
+              <span className="text-sm text-gray-700">Draft (Hidden from students)</span>
+            </label>
+          </div>
         </div>
 
         {/* Submit Button */}

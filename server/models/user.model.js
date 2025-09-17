@@ -5,51 +5,117 @@ const userSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
+        trim: true,
     },
     email: {
         type: String,
         required: true,
+        unique: true,
+        lowercase: true,
+        trim: true,
     },
     password: {
         type: String,
         required: true,
+        select: false,
     },
     role: {
         type: String,
-        enum: ["student", "instructor"],
-        default: "student",
+        enum: ["student", "instructor", "admin"],
+        default: "student", // Default role is student, admin is exclusive
     },
+    // User Profile Information
+    profile: {
+        bio: {
+            type: String,
+            default: "",
+            maxlength: 500
+        },
+        areasOfInterest: [{
+            type: String,
+            trim: true
+        }],
+        skillLevel: {
+            type: String,
+            enum: ["beginner", "intermediate", "advanced"],
+            default: "beginner"
+        },
+        learningGoals: [{
+            type: String,
+            trim: true
+        }],
+        preferredLearningStyle: {
+            type: String,
+            enum: ["visual", "auditory", "kinesthetic", "reading"],
+            default: "visual"
+        },
+        isProfileComplete: {
+            type: Boolean,
+            default: false
+        }
+    },
+    
+    // Course Enrollments with Progress Tracking
+    enrolledCourses: [{
+        course: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Course",
+            required: true
+        },
+        enrolledAt: {
+            type: Date,
+            default: Date.now
+        },
+        progress: {
+            completedLectures: [{
+                lecture: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    ref: "Lecture"
+                },
+                completedAt: {
+                    type: Date,
+                    default: Date.now
+                }
+            }],
+            progressPercentage: {
+                type: Number,
+                default: 0,
+                min: 0,
+                max: 100
+            },
+            lastAccessedAt: {
+                type: Date,
+                default: Date.now
+            }
+        }
+    }],
+    
+    // Legacy courses field (keeping for backward compatibility)
     courses: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course",
     }],
-        photoURL: {
-            type: String,
-            default: "",
-        }
+    
+    photoURL: {
+        type: String,
+        default: "",
+        trim: true,
+    }
     }, {timestamps: true});
     
 // Hash the password before saving the user
 userSchema.pre("save", async function (next) {
-    console.log("🔹 Pre-save hook triggered");
-  
     if (!this.isModified("password")) {
-      console.log("🔹 Password not modified, skipping hash");
       return next();
     }
   
-    // ✅ Check if the password is already hashed
+    // Avoid double-hashing
     if (this.password.startsWith("$2b$")) {
-      console.log("🔹 Password is already hashed, skipping re-hash");
       return next();
     }
-  
-    console.log("🔹 Hashing password:", this.password);
   
     const salt = await bcrypt.genSalt(10);
     this.password = await bcrypt.hash(this.password, salt);
-  
-    console.log("🔹 Hashed password before save:", this.password);
     next();
   });
   

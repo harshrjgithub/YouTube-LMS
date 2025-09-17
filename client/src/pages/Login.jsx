@@ -20,13 +20,15 @@ import { Loader, Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import { useLoginUserMutation, useRegisterUserMutation } from "@/features/api/authApi";
+import { useLoginMutation, useRegisterMutation } from "@/features/api/authApi";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/context/AuthContext";
 
 const Login = () => {
   const { theme, setTheme } = useTheme();
-  const Navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("signup");
+  const navigate = useNavigate();
+  const { login: authLogin } = useAuth();
+  const [activeTab, setActiveTab] = useState("login"); // Default to login tab
 
   const [signupInput, setSignupInput] = useState({
     name: "",
@@ -39,8 +41,8 @@ const Login = () => {
     password: "",
   });
 
-  const [registerUser, { data: registerData, error: registerError, isLoading: registerLoading, isSuccess: registerSuccess }] = useRegisterUserMutation();
-  const [loginUser, { data: loginData, error: loginError, isLoading: loginLoading, isSuccess: loginSuccess }] = useLoginUserMutation();
+  const [registerUser, { data: registerData, error: registerError, isLoading: registerLoading, isSuccess: registerSuccess }] = useRegisterMutation();
+  const [loginUser, { data: loginData, error: loginError, isLoading: loginLoading, isSuccess: loginSuccess }] = useLoginMutation();
 
   const handleInputChange = (e, type) => {
     const { name, value } = e.target;
@@ -58,18 +60,33 @@ const Login = () => {
   useEffect(() => {
     if (registerSuccess && registerData) {
       toast.success(registerData.message || "🎉 Registered Successfully!");
+      // Switch to login tab after successful registration
+      setActiveTab("login");
+      // Clear registration form
+      setSignupInput({ name: "", email: "", password: "" });
     }
     if (registerError) {
-      toast.error(registerError.data.message || "❌ Couldn't register you.");
+      toast.error(registerError.data?.message || "❌ Couldn't register you.");
     }
     if (loginSuccess && loginData) {
       toast.success(loginData.message || "🔥 Logged In!");
-      Navigate("/");
+      
+      // Update auth context
+      authLogin(loginData.user);
+      
+      // Role-based redirection
+      if (loginData.user.role === 'admin' && loginData.user.email === 'adminlms@gmail.com') {
+        console.log('🔑 Admin login detected, redirecting to admin dashboard');
+        navigate("/admin/dashboard");
+      } else {
+        console.log('👤 Student login detected, redirecting to courses');
+        navigate("/courses");
+      }
     }
     if (loginError) {
-      toast.error(loginError.data.message || "😓 Invalid login credentials.");
+      toast.error(loginError.data?.message || "😓 Invalid login credentials.");
     }
-  }, [registerData, registerError, loginData, loginError]);
+  }, [registerData, registerError, loginData, loginError, authLogin, navigate]);
 
   return (
     <div className="relative flex justify-center items-center min-h-screen bg-white dark:bg-[#0e0c1b] px-4 transition-all duration-500">

@@ -39,6 +39,9 @@ const newCourseSchema = new mongoose.Schema({
         type: Boolean,
         default: false,
     },
+    playlistId: {
+  type: String,
+},
 }, { timestamps: true });
 
 export const Course = mongoose.model('Course', newCourseSchema);

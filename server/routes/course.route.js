@@ -4,22 +4,42 @@ import {
   GetAllCourses,
   UpdateCourse,
   GetCourseById,
+  DeleteCourse,
   CreateLecture,
-  GetAllLecturesOfCourse, // ✅ New controller
+  GetAllLecturesOfCourse,
+  GetAnalytics,
+  ImportPlaylistLectures,
+  ToggleCoursePublished, // ✅ New toggle published controller
 } from '../controllers/course.controller.js';
+import isAuthenticated from '../middlewares/isAuthenticated.js';
+import isAdmin from '../middlewares/isAdmin.js';
 
 const router = express.Router();
 
 // Create & Get All Courses
-router.route('/').post(CreateCourse).get(GetAllCourses);
+router.route('/')
+  .post(isAuthenticated, isAdmin, CreateCourse)
+  .get(GetAllCourses);
 
-// Get & Update Single Course
-router.route('/:id').put(UpdateCourse).get(GetCourseById);
+// Get, Update & Delete Single Course
+router.route('/:id')
+  .put(isAuthenticated, isAdmin, UpdateCourse)
+  .get(GetCourseById)
+  .delete(isAuthenticated, isAdmin, DeleteCourse);
 
 // ✅ Create Lecture
-router.route('/:courseId/lectures').post(CreateLecture);
+router.route('/:courseId/lectures')
+  .post(isAuthenticated, isAdmin, CreateLecture)
+  .get(GetAllLecturesOfCourse);
 
-// ✅ Get All Lectures of a Course (NEW CONTROLLER)
-router.route('/:courseId/lectures').get(GetAllLecturesOfCourse);
+// ✅ Import Playlist Lectures
+router.route('/:courseId/lectures/import-playlist')
+  .post(isAuthenticated, isAdmin, ImportPlaylistLectures);
+
+// ✅ Analytics endpoint
+router.route('/analytics/dashboard').get(isAuthenticated, isAdmin, GetAnalytics);
+
+// ✅ Toggle course published status
+router.route('/:id/toggle-published').patch(isAuthenticated, isAdmin, ToggleCoursePublished);
 
 export default router;

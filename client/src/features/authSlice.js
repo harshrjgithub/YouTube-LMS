@@ -13,8 +13,9 @@ const authSlice = createSlice({
     initialState,
     reducers:{
         userLoggedIn: (state, action) => {
-            state.user = action.payload;
-            state.isAuth = true;
+            // Expect shape: { user: { id, name, email } }
+            state.user = action.payload.user || null;
+            state.isAuth = Boolean(state.user);
         },
         userLoggedOut: (state) => {
             state.user = null;
